@@ -11,11 +11,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var channelId string = "discord_channel_id"
+var channelId string = "< your channel id here >"
 
 type MyEvent struct {
-	Name   string `json:"name"`
-	UserId string `json:"userId"`
+	Message string `json:"message"`
 }
 
 func HandleRequest(ctx context.Context, event *MyEvent) (*string, error) {
@@ -26,7 +25,7 @@ func HandleRequest(ctx context.Context, event *MyEvent) (*string, error) {
 	ssmClient := ssm.New(session.New())
 	parameterName := "/cakealert/discord/token"
 
-	discordToken, err := ssmClient.GetParameter(&ssm.GetParameterInput{
+	discordTokenOutput, err := ssmClient.GetParameter(&ssm.GetParameterInput{
 		Name:           &parameterName,
 		WithDecryption: aws.Bool(true),
 	})
@@ -35,13 +34,15 @@ func HandleRequest(ctx context.Context, event *MyEvent) (*string, error) {
 		return nil, err
 	}
 
-	discord, err := discordgo.New("Bot " + discordToken)
+	discordToken := discordTokenOutput.Parameter.Value
+
+	discord, err := discordgo.New("Bot " + *discordToken)
 	if err != nil {
 		fmt.Println("error creating Discord session,", err)
 		return nil, err
 	}
 	err = discord.Open()
-	discord.ChannelMessageSend(channelId, fmt.Sprintf("<@%s> Happy Birthday %s!", event.UserId, event.Name))
+	discord.ChannelMessageSend(channelId, event.Message)
 
 	mes := "Congratulations sent to discord!"
 	return &mes, nil
