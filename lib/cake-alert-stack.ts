@@ -20,11 +20,9 @@ export class CakeAlertStack extends Stack {
       handler: 'lambda', // Assumes your Golang code has a main function
     });
 
-    const myLambdaAsIFunction: lambda.IFunction = fn;
-
     // set birthday dates
     const cakeDates = [
-      { month: 4, day: 27 }, 
+      { month: 4, day: 27}, 
       // Add more dates as needed
     ];
 
@@ -39,16 +37,7 @@ export class CakeAlertStack extends Stack {
             }),
           }),
         ],
-      }
-    })
-    new events.Rule(this, 'ScheduleRule', {
-      
-      schedule:  events.Schedule.expression('cron(* * * * ? *)'), // set appropriate cron, once a year 
-      targets: [new LambdaFunction(myLambdaAsIFunction, {
-        event: events.RuleTargetInput.fromObject({
-          message: 'Good Birthday Boy',
-        }),
-      })],
-     });
+      })
+    });
   }
 }

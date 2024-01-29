@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { CakeAlertStack } from '../lib/cdk-stack';
+import { CakeAlertStack } from '../lib/cake-alert-stack';
 require('dotenv').config();
 
 const app = new cdk.App();
